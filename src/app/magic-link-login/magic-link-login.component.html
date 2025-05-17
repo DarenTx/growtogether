@@ -1,0 +1,16 @@
+<app-header />
+
+<div class="login-container">
+  <h2>Login</h2>
+  <div *ngIf="successMessage" class="success-message">
+    {{ successMessage }}
+  </div>
+  <div *ngIf="errorMessage" class="error-message">
+    {{ errorMessage }}
+  </div>
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <label for="email">Email:</label>
+    <input id="email" type="email" formControlName="email" />
+    <button type="submit" [disabled]="form.invalid">Send Login Link</button>
+  </form>
+</div>

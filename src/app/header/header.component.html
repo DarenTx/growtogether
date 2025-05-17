@@ -1,0 +1,13 @@
+<header class="header">
+  <div class="header-content">
+    <span class="app-title">Grow Together</span>
+    <nav class="nav-placeholder">
+      <span style="font-size: 0.8em; color: #888"
+        >Auth: {{ isAuthenticated }}</span
+      >
+      <button *ngIf="isAuthenticated" (click)="logout()" class="logout-btn">
+        Logout
+      </button>
+    </nav>
+  </div>
+</header>
