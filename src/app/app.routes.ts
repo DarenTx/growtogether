@@ -4,6 +4,7 @@ import { MagicLinkLoginComponent } from './magic-link-login/magic-link-login.com
 import { authGuard } from './services/auth.guard';
 import { ListDataComponent } from './list-data/list-data.component';
 import { RegisterUserComponent } from './register-user/register-user.component';
+import { LoginCallbackComponent } from './login-callback/login-callback.component';
 
 export const routes: Routes = [
   { path: 'login', component: MagicLinkLoginComponent },
@@ -18,5 +19,6 @@ export const routes: Routes = [
     component: ListDataComponent,
     canActivate: [authGuard],
   },
+  { path: 'login-callback', component: LoginCallbackComponent },
   { path: '', redirectTo: 'list', pathMatch: 'full' },
 ];

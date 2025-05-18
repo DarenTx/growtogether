@@ -139,4 +139,8 @@ export class SupabaseService {
     if (error) throw error;
     return data;
   }
+
+  async exchangeCodeForSession(url: string) {
+    return await this.supabase.auth.exchangeCodeForSession(url);
+  }
 }
