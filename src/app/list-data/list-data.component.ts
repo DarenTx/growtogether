@@ -18,6 +18,8 @@ export class ListDataComponent implements OnInit {
   error = '';
   private months = 12;
   filterFirm: string = '';
+  sortColumn: string = '';
+  sortDirection: 'asc' | 'desc' = 'asc';
 
   constructor(private supabaseService: SupabaseService) {}
 
@@ -66,6 +68,24 @@ export class ListDataComponent implements OnInit {
     return monthNames[monthNumber - 1] || '';
   }
 
+  getMonthAbbr(monthNumber: number): string {
+    const monthAbbrs = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
+    return monthAbbrs[monthNumber - 1] || '';
+  }
+
   async deleteRow(id: string | number, month: number, year: number) {
     const confirmed = confirm(
       `Are you sure you want to delete the entry for ${this.getMonthName(
@@ -81,15 +101,38 @@ export class ListDataComponent implements OnInit {
     }
   }
 
+  setSort(column: string) {
+    if (this.sortColumn === column) {
+      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.sortColumn = column;
+      this.sortDirection = 'asc';
+    }
+  }
+
   get filteredData() {
-    if (!this.filterFirm.trim()) return this.data;
-    return this.data.filter(
-      (row) =>
-        row.investment_firm &&
-        row.investment_firm
-          .toLowerCase()
-          .includes(this.filterFirm.trim().toLowerCase())
-    );
+    let filtered = !this.filterFirm.trim()
+      ? this.data
+      : this.data.filter(
+          (row) =>
+            row.investment_firm &&
+            row.investment_firm
+              .toLowerCase()
+              .includes(this.filterFirm.trim().toLowerCase())
+        );
+    if (!this.sortColumn) return filtered;
+    return [...filtered].sort((a, b) => {
+      let result = 0;
+      if (this.sortColumn === 'investment_firm') {
+        result = a.investment_firm.localeCompare(b.investment_firm);
+      } else if (this.sortColumn === 'period') {
+        // Sort by year, then month
+        result = a.year - b.year || a.month - b.month;
+      } else if (this.sortColumn === 'ytd_return') {
+        result = a.monthly_return - b.monthly_return;
+      }
+      return this.sortDirection === 'asc' ? result : -result;
+    });
   }
 
   get firmOptions(): string[] {
