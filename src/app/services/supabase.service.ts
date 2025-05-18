@@ -13,7 +13,7 @@ export class SupabaseService {
   private baseUrl =
     window.location.origin +
     window.location.pathname.split('/').slice(0, 2).join('/');
-  private redirectUrl = `${this.baseUrl}/login-callback`;
+  private redirectUrl = `${this.baseUrl}/`;
 
   constructor() {
     this.supabase = createClient(

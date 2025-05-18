@@ -1,12 +1,6 @@
 <app-header />
 
 <div class="container is-max-desktop mt-6">
-  <div *ngIf="successMessage" class="notification is-success">
-    {{ successMessage }}
-  </div>
-  <div *ngIf="errorMessage" class="notification is-danger">
-    {{ errorMessage }}
-  </div>
   <h2 class="title is-3 has-text-centered mb-5">Login</h2>
   <form [formGroup]="form" (ngSubmit)="onSubmit()">
     <label for="email">Email:</label>
@@ -27,4 +21,10 @@
       <a routerLink="/register" class="is-link">Register for an account</a>
     </div>
   </form>
+  <div *ngIf="successMessage" class="notification is-success mt-4">
+    {{ successMessage }}
+  </div>
+  <div *ngIf="errorMessage" class="notification is-danger mt-4">
+    {{ errorMessage }}
+  </div>
 </div>
