@@ -87,3 +87,17 @@ select.is-danger {
   border-color: #e53e3e !important;
   box-shadow: 0 0 0 0.125em rgba(229, 62, 62, 0.25);
 }
+
+input[type="text"],
+.input {
+  background: var(--input-bg, #fff);
+  color: var(--input-color, #222);
+}
+
+@media (prefers-color-scheme: dark) {
+  input[type="text"],
+  .input {
+    background: #fff !important;
+    color: #222 !important;
+  }
+}
