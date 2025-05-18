@@ -1,13 +1,22 @@
-<header class="header">
-  <div class="header-content">
-    <span class="app-title">Grow Together</span>
-    <nav class="nav-placeholder">
-      <span style="font-size: 0.8em; color: #888"
-        >Auth: {{ isAuthenticated }}</span
+<nav class="navbar is-primary" role="navigation" aria-label="main navigation">
+  <div class="navbar-brand">
+    <a
+      routerLink="/"
+      class="navbar-item has-text-weight-bold has-text-white is-size-3"
+      style="cursor: pointer"
+    >
+      Grow Together
+    </a>
+  </div>
+  <div class="navbar-end">
+    <div class="navbar-item">
+      <button
+        *ngIf="isAuthenticated"
+        (click)="logout()"
+        class="button is-light has-text-weight-bold"
       >
-      <button *ngIf="isAuthenticated" (click)="logout()" class="logout-btn">
         Logout
       </button>
-    </nav>
+    </div>
   </div>
-</header>
+</nav>

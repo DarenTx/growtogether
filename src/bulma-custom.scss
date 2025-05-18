@@ -1,0 +1,21 @@
+// Navy color palette for Bulma
+$primary: #22356f; // Navy
+$link: #3e4a89; // Lighter blue for .is-link
+$info: #3e4a89;
+$success: #2b6777;
+$warning: #f6c90e;
+$danger: #c44536;
+
+@import "bulma/bulma";
+
+// Ensure navbar uses the primary color
+.navbar.is-primary {
+  background-color: $primary !important;
+}
+
+// Force primary buttons to use navy
+.button.is-primary {
+  background-color: $primary !important;
+  border-color: $primary !important;
+  color: #fff !important;
+}

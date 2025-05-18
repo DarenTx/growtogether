@@ -31,11 +31,12 @@ export class SupabaseService {
     year: number,
     month: number,
     monthly_return: number,
-    investment_firm: string
+    investment_firm: string,
+    user_id: string
   ) {
     const { data, error } = await this.supabase
       .from('retirement_results')
-      .insert([{ year, month, monthly_return, investment_firm }]);
+      .insert([{ year, month, monthly_return, investment_firm, user_id }]);
     if (error) throw error;
     return data;
   }
@@ -58,5 +59,84 @@ export class SupabaseService {
     this.supabase.auth.getSession().then(({ data }) => {
       console.log('Supabase session:', data.session);
     });
+  }
+
+  async listRetirementData(userId: string, months: number) {
+    const now = new Date();
+    const start = new Date(now.getFullYear(), now.getMonth() - (months - 1), 1);
+    // If you have a timestamp column (e.g., created_at), use it for filtering:
+    // const { data, error } = await this.supabase
+    //   .from('retirement_results')
+    //   .select('*')
+    //   .eq('user_id', userId)
+    //   .gte('created_at', start.toISOString())
+    //   .order('year', { ascending: false })
+    //   .order('month', { ascending: false })
+    //   .limit(months);
+    //   if (error) throw error;
+    //   return data;
+
+    // If you do not have a timestamp, fetch all and filter in JS:
+    const { data, error } = await this.supabase
+      .from('retirement_results')
+      .select('*')
+      .eq('user_id', userId)
+      .order('year', { ascending: false })
+      .order('month', { ascending: false });
+    if (error) throw error;
+    // Filter in JS for last N months
+    const results = (data || []).filter((row: any) => {
+      const rowDate = new Date(row.year, row.month - 1, 1);
+      return rowDate >= start && rowDate <= now;
+    });
+    // Sort descending and take the most recent N
+    results.sort((a: any, b: any) => {
+      const aDate = new Date(a.year, a.month - 1, 1);
+      const bDate = new Date(b.year, b.month - 1, 1);
+      return bDate.getTime() - aDate.getTime();
+    });
+    return results.slice(0, months);
+  }
+
+  async userExistsByEmail(email: string): Promise<boolean> {
+    const { data, error } = await this.supabase
+      .from('users')
+      .select('id')
+      .eq('email', email)
+      .maybeSingle();
+    if (error) throw error;
+    return !!data;
+  }
+
+  async getRetirementDataById(id: string | number) {
+    const { data, error } = await this.supabase
+      .from('retirement_results')
+      .select('*')
+      .eq('id', id)
+      .maybeSingle();
+    if (error) throw error;
+    return data;
+  }
+
+  async updateRetirementResult(
+    id: string | number,
+    investment_firm: string,
+    monthly_return: number
+  ) {
+    const { data, error } = await this.supabase
+      .from('retirement_results')
+      .update({ investment_firm, monthly_return })
+      .eq('id', id);
+    if (error) throw error;
+    return data;
+  }
+
+  async deleteRetirementResult(id: string | number) {
+    const { data, error } = await this.supabase
+      .from('retirement_results')
+      .delete()
+      .eq('id', id);
+    if (error) throw error;
+    return data;
   }
 }

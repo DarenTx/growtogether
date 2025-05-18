@@ -80,3 +80,10 @@ button[type="submit"]:hover {
   margin-bottom: 1rem;
   text-align: center;
 }
+
+.input.is-danger,
+input[type="number"].is-danger,
+select.is-danger {
+  border-color: #e53e3e !important;
+  box-shadow: 0 0 0 0.125em rgba(229, 62, 62, 0.25);
+}

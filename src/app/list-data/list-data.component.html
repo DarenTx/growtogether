@@ -1,0 +1,80 @@
+<app-header />
+<app-nav />
+
+<div class="container is-max-desktop mt-6">
+  <div class="is-flex is-justify-content-flex-end mb-3">
+    <a routerLink="/data-entry" class="button is-link">Enter New Data</a>
+  </div>
+  <h2 class="title is-3 has-text-centered mb-5">Retirement Data</h2>
+
+  <div *ngIf="loading" class="has-text-centered">Loading...</div>
+  <div *ngIf="error" class="notification is-danger">{{ error }}</div>
+
+  <div *ngIf="firmOptions.length > 1" class="field mb-4">
+    <label class="label">Filter by Investment Firm</label>
+    <div class="control">
+      <select
+        class="input"
+        [(ngModel)]="filterFirm"
+        name="filterFirm"
+        title="Filter by Investment Firm"
+      >
+        <option value="">All</option>
+        <option *ngFor="let firm of firmOptions" [value]="firm">
+          {{ firm }}
+        </option>
+      </select>
+    </div>
+  </div>
+  <table
+    *ngIf="!loading && !error && filteredData.length"
+    class="table is-fullwidth is-striped"
+  >
+    <thead>
+      <tr>
+        <th>Investment Firm</th>
+        <th>Month</th>
+        <th>Return</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let row of filteredData">
+        <td>{{ row.investment_firm }}</td>
+        <td>{{ getMonthName(row.month) }} {{ row.year }}</td>
+        <td [ngClass]="{ 'has-text-danger': row.monthly_return < 0 }">
+          {{ row.monthly_return | number : "1.2-2" }}%
+        </td>
+        <td>
+          <a
+            [routerLink]="['/data-entry']"
+            [queryParams]="{ id: row.id }"
+            [attr.title]="'Edit ' + getMonthName(row.month) + ' ' + row.year"
+          >
+            <span class="icon">
+              <i class="fas fa-edit"></i>
+            </span>
+          </a>
+          <a
+            href="#"
+            (click)="
+              deleteRow(row.id, row.month, row.year); $event.preventDefault()
+            "
+            [attr.title]="'Delete ' + getMonthName(row.month) + ' ' + row.year"
+            style="margin-left: 0.5em; color: #e53e3e"
+          >
+            <span class="icon">
+              <i class="fas fa-trash"></i>
+            </span>
+          </a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <div
+    *ngIf="!loading && !error && !filteredData.length"
+    class="notification is-info"
+  >
+    No data found.
+  </div>
+</div>
