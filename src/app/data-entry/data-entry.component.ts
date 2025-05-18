@@ -9,18 +9,11 @@ import {
 import { SupabaseService } from '../services/supabase.service';
 import { HeaderComponent } from '../header/header.component';
 import { Router, RouterModule, ActivatedRoute } from '@angular/router';
-import { AppNavComponent } from '../app-nav/app-nav.component';
 
 @Component({
   selector: 'app-data-entry',
   standalone: true,
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    RouterModule,
-    HeaderComponent,
-    AppNavComponent,
-  ],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, HeaderComponent],
   templateUrl: './data-entry.component.html',
   styleUrl: './data-entry.component.css',
 })

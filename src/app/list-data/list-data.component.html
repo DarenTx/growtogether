@@ -1,5 +1,4 @@
 <app-header />
-<app-nav />
 
 <div class="container is-max-desktop mt-6">
   <div class="is-flex is-justify-content-flex-end mb-3">
@@ -33,19 +32,19 @@
     <thead>
       <tr>
         <th>Investment Firm</th>
-        <th>Month</th>
-        <th>Return</th>
-        <th></th>
+        <th>Period</th>
+        <th>YTD Return</th>
+        <th class="has-text-right"></th>
       </tr>
     </thead>
     <tbody>
       <tr *ngFor="let row of filteredData">
         <td>{{ row.investment_firm }}</td>
-        <td>{{ getMonthName(row.month) }} {{ row.year }}</td>
+        <td>January to {{ getMonthName(row.month) }} {{ row.year }}</td>
         <td [ngClass]="{ 'has-text-danger': row.monthly_return < 0 }">
           {{ row.monthly_return | number : "1.2-2" }}%
         </td>
-        <td>
+        <td class="has-text-right">
           <a
             [routerLink]="['/add']"
             [queryParams]="{ id: row.id }"

@@ -19,8 +19,16 @@ export class LoginCallbackComponent implements OnInit {
     );
     if (error) {
       console.error('Session error', error);
+      return;
+    }
+    // Check if user exists in users table
+    const user = await this.supabaseService.getUser();
+    if (!user) {
+      // Get email from session
+      const session = await this.supabaseService['supabase'].auth.getSession();
+      const email = session.data.session?.user?.email;
+      this.router.navigate(['/register'], { queryParams: { email } });
     } else {
-      // Session stored, now redirect to main view
       this.router.navigate(['/list']);
     }
   }

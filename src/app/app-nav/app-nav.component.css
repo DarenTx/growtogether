@@ -1,7 +1,7 @@
 .app-nav {
-  background: none;
-  border-radius: 0;
-  padding: 0;
+  background: #fff4e6;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
   margin-bottom: 2rem;
   box-shadow: none;
   max-width: none;
@@ -33,7 +33,7 @@
 
 .app-nav a:hover,
 .app-nav a:focus {
-  background: #e0e7ff;
+  background: #ffe0b2;
   color: #1e40af;
   text-decoration: none;
 }

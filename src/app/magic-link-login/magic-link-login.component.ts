@@ -45,11 +45,6 @@ export class MagicLinkLoginComponent implements OnInit {
       this.errorMessage = '';
       const { email } = this.form.value;
       try {
-        const exists = await this.supabaseService.userExistsByEmail(email);
-        if (!exists) {
-          this.errorMessage = 'User not found.';
-          return;
-        }
         await this.supabaseService.sendMagicLink(email);
         this.successMessage = 'Check your email for a login link!';
       } catch (error: any) {
