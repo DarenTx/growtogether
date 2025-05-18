@@ -4,18 +4,11 @@ import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { SupabaseService } from '../services/supabase.service';
 import { HeaderComponent } from '../header/header.component';
-import { AppNavComponent } from '../app-nav/app-nav.component';
 
 @Component({
   selector: 'app-list-data',
   standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    RouterModule,
-    HeaderComponent,
-    AppNavComponent,
-  ],
+  imports: [CommonModule, FormsModule, RouterModule, HeaderComponent],
   templateUrl: './list-data.component.html',
   styleUrl: './list-data.component.css',
 })

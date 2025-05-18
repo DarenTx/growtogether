@@ -41,3 +41,20 @@
 .logout-btn:hover {
   background: #c53030;
 }
+
+.navbar-end .is-link {
+  color: #fff !important;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.navbar-end .is-link:hover,
+.navbar-end .is-link:focus {
+  color: #ffe0b2 !important;
+  text-decoration: underline;
+}
+
+.header-white {
+  color: #fff !important;
+}

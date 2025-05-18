@@ -9,14 +9,28 @@
     </a>
   </div>
   <div class="navbar-end">
-    <div class="navbar-item">
-      <button
-        *ngIf="isAuthenticated"
-        (click)="logout()"
-        class="button is-light has-text-weight-bold"
-      >
-        Logout
-      </button>
+    <div
+      class="navbar-item has-text-weight-bold"
+      style="display: flex; align-items: center; gap: 0.5rem"
+    >
+      <ng-container *ngIf="isAuthenticated; else loginLink">
+        <span class="header-white">
+          {{
+            user?.first_name && user?.last_name
+              ? user.first_name + " " + user.last_name
+              : user?.email || ""
+          }}
+        </span>
+        <span class="header-white">|</span>
+        <a href="#" (click)="logout(); $event.preventDefault()" class="is-link"
+          >Logout</a
+        >
+      </ng-container>
+      <ng-template #loginLink>
+        <a routerLink="/login" class="is-link">Login</a>
+      </ng-template>
     </div>
   </div>
 </nav>
+
+<app-nav *ngIf="!isAuthPage" />

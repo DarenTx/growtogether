@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import {
   ReactiveFormsModule,
   FormBuilder,
@@ -8,6 +8,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { SupabaseService } from '../services/supabase.service';
+import { User } from '../models/user.model';
 import { HeaderComponent } from '../header/header.component';
 
 @Component({
@@ -17,14 +18,16 @@ import { HeaderComponent } from '../header/header.component';
   templateUrl: './register-user.component.html',
   styleUrl: './register-user.component.css',
 })
-export class RegisterUserComponent {
+export class RegisterUserComponent implements OnInit {
   form: FormGroup;
   successMessage = '';
   errorMessage = '';
 
   constructor(
     private fb: FormBuilder,
-    private supabaseService: SupabaseService
+    private supabaseService: SupabaseService,
+    private route: ActivatedRoute,
+    private router: Router
   ) {
     this.form = this.fb.group({
       first_name: ['', Validators.required],
@@ -35,6 +38,15 @@ export class RegisterUserComponent {
     });
   }
 
+  ngOnInit() {
+    // Pre-fill and disable email if present in query params
+    const email = this.route.snapshot.queryParamMap.get('email');
+    if (email) {
+      this.form.get('email')?.setValue(email);
+      this.form.get('email')?.disable();
+    }
+  }
+
   async onSubmit() {
     this.successMessage = '';
     this.errorMessage = '';
@@ -43,21 +55,32 @@ export class RegisterUserComponent {
         this.form.value;
       invitation_code = invitation_code.toLowerCase();
       try {
-        const { data, error } = await this.supabaseService['supabase']
-          .from('users')
-          .insert([
-            {
-              first_name,
-              last_name,
-              email,
-              phone,
-              invitation_code,
-              is_active: true,
-            },
-          ]);
-        if (error) throw error;
+        // Get the current user's id from Supabase Auth
+        const session = await this.supabaseService[
+          'supabase'
+        ].auth.getSession();
+        const userId = session.data.session?.user?.id;
+        if (!userId) {
+          this.errorMessage = 'User not logged in.';
+          return;
+        }
+        // If email is disabled, get it from the form control's value or from query param
+        if (this.form.get('email')?.disabled) {
+          email = this.route.snapshot.queryParamMap.get('email') || email;
+        }
+        const user: User = {
+          id: userId,
+          first_name,
+          last_name,
+          email,
+          phone,
+          invitation_code,
+          is_active: true,
+        };
+        await this.supabaseService.registerUser(user);
         this.successMessage = 'Registration successful!';
         this.form.reset();
+        this.router.navigate(['/list']);
       } catch (err: any) {
         if (err.message && err.message.includes('row-level security policy')) {
           this.errorMessage =

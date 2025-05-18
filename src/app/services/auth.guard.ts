@@ -11,5 +11,14 @@ export const authGuard: CanActivateFn = async (route, state) => {
     router.navigate(['/login']);
     return false;
   }
+  // If authenticated, check for user row
+  const user = await supabaseService.getUser();
+  if (!user) {
+    // Get email from session
+    const session = await supabaseService['supabase'].auth.getSession();
+    const email = session.data.session?.user?.email;
+    router.navigate(['/register'], { queryParams: { email } });
+    return false;
+  }
   return true;
 };

@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { environment } from '../../environments/environment';
 import { BehaviorSubject } from 'rxjs';
+import { User } from '../models/user.model';
 
 @Injectable({
   providedIn: 'root',
@@ -32,19 +33,7 @@ export class SupabaseService {
     return this.authState.asObservable();
   }
 
-  async insertRetirementResult(
-    year: number,
-    month: number,
-    monthly_return: number,
-    investment_firm: string,
-    user_id: string
-  ) {
-    const { data, error } = await this.supabase
-      .from('retirement_results')
-      .insert([{ year, month, monthly_return, investment_firm, user_id }]);
-    if (error) throw error;
-    return data;
-  }
+  // #region Auth, Login, Registration, Users
 
   async sendMagicLink(email: string) {
     const { error } = await this.supabase.auth.signInWithOtp({
@@ -54,6 +43,10 @@ export class SupabaseService {
       },
     });
     if (error) throw error;
+  }
+
+  async exchangeCodeForSession(url: string) {
+    return await this.supabase.auth.exchangeCodeForSession(url);
   }
 
   async isAuthenticated(): Promise<boolean> {
@@ -71,41 +64,21 @@ export class SupabaseService {
     });
   }
 
-  async listRetirementData(userId: string, months: number) {
-    const now = new Date();
-    const start = new Date(now.getFullYear(), now.getMonth() - (months - 1), 1);
-    // If you have a timestamp column (e.g., created_at), use it for filtering:
-    // const { data, error } = await this.supabase
-    //   .from('retirement_results')
-    //   .select('*')
-    //   .eq('user_id', userId)
-    //   .gte('created_at', start.toISOString())
-    //   .order('year', { ascending: false })
-    //   .order('month', { ascending: false })
-    //   .limit(months);
-    //   if (error) throw error;
-    //   return data;
-
-    // If you do not have a timestamp, fetch all and filter in JS:
+  async getUser(): Promise<User | null> {
+    const session = await this.supabase.auth.getSession();
+    const userId = session.data.session?.user?.id;
+    console.log('Auth userId:', userId);
+    if (!userId) return null;
     const { data, error } = await this.supabase
-      .from('retirement_results')
+      .from('users')
       .select('*')
-      .eq('user_id', userId)
-      .order('year', { ascending: false })
-      .order('month', { ascending: false });
-    if (error) throw error;
-    // Filter in JS for last N months
-    const results = (data || []).filter((row: any) => {
-      const rowDate = new Date(row.year, row.month - 1, 1);
-      return rowDate >= start && rowDate <= now;
-    });
-    // Sort descending and take the most recent N
-    results.sort((a: any, b: any) => {
-      const aDate = new Date(a.year, a.month - 1, 1);
-      const bDate = new Date(b.year, b.month - 1, 1);
-      return bDate.getTime() - aDate.getTime();
-    });
-    return results.slice(0, months);
+      .eq('id', userId)
+      .maybeSingle();
+    console.log('User row:', data, 'Error:', error);
+    if (error || !data) {
+      return null;
+    }
+    return data as User;
   }
 
   async userExistsByEmail(email: string): Promise<boolean> {
@@ -116,6 +89,52 @@ export class SupabaseService {
       .maybeSingle();
     if (error) throw error;
     return !!data;
+  }
+
+  async registerUser(user: User) {
+    const { data, error } = await this.supabase.from('users').insert([user]);
+    if (error) throw error;
+    return data;
+  }
+
+  // #endregion
+
+  // #region Retirement Results
+
+  async insertRetirementResult(
+    year: number,
+    month: number,
+    monthly_return: number,
+    investment_firm: string,
+    user_id: string
+  ) {
+    const { data, error } = await this.supabase
+      .from('retirement_results')
+      .insert([{ year, month, monthly_return, investment_firm, user_id }]);
+    if (error) throw error;
+    return data;
+  }
+
+  async listRetirementData(userId: string, months: number) {
+    const now = new Date();
+    const start = new Date(now.getFullYear(), now.getMonth() - (months - 1), 1);
+    const { data, error } = await this.supabase
+      .from('retirement_results')
+      .select('*')
+      .eq('user_id', userId)
+      .order('year', { ascending: false })
+      .order('month', { ascending: false });
+    if (error) throw error;
+    const results = (data || []).filter((row: any) => {
+      const rowDate = new Date(row.year, row.month - 1, 1);
+      return rowDate >= start && rowDate <= now;
+    });
+    results.sort((a: any, b: any) => {
+      const aDate = new Date(a.year, a.month - 1, 1);
+      const bDate = new Date(b.year, b.month - 1, 1);
+      return bDate.getTime() - aDate.getTime();
+    });
+    return results.slice(0, months);
   }
 
   async getRetirementDataById(id: string | number) {
@@ -150,7 +169,5 @@ export class SupabaseService {
     return data;
   }
 
-  async exchangeCodeForSession(url: string) {
-    return await this.supabase.auth.exchangeCodeForSession(url);
-  }
+  // #endregion
 }
