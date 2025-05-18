@@ -27,6 +27,9 @@ jobs:
       - name: Copy index.html to 404.html (for Angular routing)
         run: cp dist/grow-together/browser/index.html dist/grow-together/browser/404.html
 
+      - name: List dist folder contents
+        run: ls -R dist
+
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
