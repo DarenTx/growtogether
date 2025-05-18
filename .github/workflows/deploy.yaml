@@ -24,6 +24,9 @@ jobs:
       - name: Build Angular app for GitHub Pages
         run: npm run build -- --configuration production --base-href /growtogether/
 
+      - name: Copy index.html to 404.html (for Angular routing)
+        run: cp dist/grow-together/index.html dist/grow-together/404.html
+
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
