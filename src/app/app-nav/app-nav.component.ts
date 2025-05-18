@@ -8,7 +8,7 @@ import { RouterModule } from '@angular/router';
   template: `
     <nav class="app-nav">
       <ul>
-        <li><a routerLink="/list-data">My Data</a></li>
+        <li><a routerLink="/list">My Data</a></li>
         <li><a href="#">Year To Date</a></li>
       </ul>
     </nav>
