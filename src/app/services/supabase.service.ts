@@ -10,6 +10,11 @@ export class SupabaseService {
   private supabase: SupabaseClient;
   private authState = new BehaviorSubject<boolean>(false);
 
+  private baseUrl =
+    window.location.origin +
+    window.location.pathname.split('/').slice(0, 2).join('/');
+  private redirectUrl = `${this.baseUrl}/login-callback`;
+
   constructor() {
     this.supabase = createClient(
       environment.supabaseUrl,
@@ -42,7 +47,12 @@ export class SupabaseService {
   }
 
   async sendMagicLink(email: string) {
-    const { error } = await this.supabase.auth.signInWithOtp({ email });
+    const { error } = await this.supabase.auth.signInWithOtp({
+      email,
+      options: {
+        emailRedirectTo: this.redirectUrl,
+      },
+    });
     if (error) throw error;
   }
 
