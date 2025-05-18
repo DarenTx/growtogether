@@ -6,17 +6,17 @@ import { ListDataComponent } from './list-data/list-data.component';
 import { RegisterUserComponent } from './register-user/register-user.component';
 
 export const routes: Routes = [
-  { path: 'magic-link-login', component: MagicLinkLoginComponent },
+  { path: 'login', component: MagicLinkLoginComponent },
   { path: 'register', component: RegisterUserComponent },
   {
-    path: 'data-entry',
+    path: 'add',
     component: DataEntryComponent,
     canActivate: [authGuard],
   },
   {
-    path: 'list-data',
+    path: 'list',
     component: ListDataComponent,
     canActivate: [authGuard],
   },
-  { path: '', redirectTo: 'list-data', pathMatch: 'full' },
+  { path: '', redirectTo: 'list', pathMatch: 'full' },
 ];
