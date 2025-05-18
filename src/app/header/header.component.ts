@@ -34,6 +34,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   async logout() {
     await this.supabaseService.logout();
-    this.router.navigate(['/magic-link-login']);
+    this.router.navigate(['/login']);
   }
 }

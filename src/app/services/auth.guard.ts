@@ -8,7 +8,7 @@ export const authGuard: CanActivateFn = async (route, state) => {
   const router = inject(Router);
   const isAuth = await supabaseService.isAuthenticated();
   if (!isAuth) {
-    router.navigate(['/magic-link-login']);
+    router.navigate(['/login']);
     return false;
   }
   return true;
