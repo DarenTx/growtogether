@@ -3,7 +3,7 @@
 
 <div class="container is-max-desktop mt-6">
   <div class="is-flex is-justify-content-flex-end mb-3">
-    <a routerLink="/data-entry" class="button is-link">Enter New Data</a>
+    <a routerLink="/add" class="button is-link">Enter New Data</a>
   </div>
   <h2 class="title is-3 has-text-centered mb-5">Retirement Data</h2>
 
@@ -47,7 +47,7 @@
         </td>
         <td>
           <a
-            [routerLink]="['/data-entry']"
+            [routerLink]="['/add']"
             [queryParams]="{ id: row.id }"
             [attr.title]="'Edit ' + getMonthName(row.month) + ' ' + row.year"
           >
