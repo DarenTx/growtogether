@@ -1,40 +1,71 @@
 <app-header />
+<app-nav />
 
-<div class="data-entry-container">
-  <h2>Enter Retirement Data</h2>
-  <div *ngIf="successMessage" class="success-message">
-    {{ successMessage }}
-  </div>
-  <div *ngIf="errorMessage" class="error-message">
-    {{ errorMessage }}
-  </div>
+<div class="container is-max-desktop mt-6">
+  <h2 class="title is-3 has-text-centered mb-5">Enter Retirement Data</h2>
 
   <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div class="mb-4">
+      <label for="investment_firm">Investment Firm</label>
+      <input
+        id="investment_firm"
+        type="text"
+        formControlName="investment_firm"
+        class="input"
+        [ngClass]="{
+          'is-danger':
+            form.get('investment_firm')?.invalid &&
+            form.get('investment_firm')?.touched
+        }"
+        required
+        list="investmentFirmOptions"
+      />
+      <datalist id="investmentFirmOptions">
+        <option value="Fidelity Investments"></option>
+        <option value="Edward Jones"></option>
+      </datalist>
+    </div>
     <div>
-      <label for="year">Year:</label>
-      <select id="year" formControlName="year">
+      <label for="year">Year</label>
+      <select
+        id="year"
+        formControlName="year"
+        [ngClass]="{
+          'is-danger': form.get('year')?.invalid && form.get('year')?.touched
+        }"
+        [disabled]="editMode"
+      >
         <option *ngFor="let year of years" [value]="year">{{ year }}</option>
       </select>
     </div>
 
     <div>
-      <label for="month">Month:</label>
-      <select id="month" formControlName="month">
-        <option *ngFor="let month of months" [value]="month.value">
+      <label for="month">Month</label>
+      <select
+        id="month"
+        formControlName="month"
+        [ngClass]="{
+          'is-danger': form.get('month')?.invalid && form.get('month')?.touched
+        }"
+        [disabled]="editMode"
+      >
+        <option *ngFor="let month of filteredMonths" [value]="month.value">
           {{ month.name }}
         </option>
       </select>
     </div>
 
     <div>
-      <label for="percentage">Percentage:</label>
+      <label for="percentage">Percentage</label>
       <input
         id="percentage"
         type="number"
         formControlName="percentage"
-        min="0"
-        max="100"
         step="0.01"
+        [ngClass]="{
+          'is-danger':
+            form.get('percentage')?.invalid && form.get('percentage')?.touched
+        }"
       />
       <div
         *ngIf="
@@ -44,15 +75,34 @@
         <small *ngIf="form.get('percentage')?.errors?.['required']"
           >Percentage is required.</small
         >
-        <small *ngIf="form.get('percentage')?.errors?.['min']"
-          >Minimum is 0.</small
-        >
-        <small *ngIf="form.get('percentage')?.errors?.['max']"
-          >Maximum is 100.</small
-        >
       </div>
     </div>
 
-    <button type="submit" [disabled]="form.invalid">Submit</button>
+    <button
+      type="submit"
+      [disabled]="form.invalid"
+      class="button is-link is-fullwidth mt-4"
+    >
+      Submit
+    </button>
+    <div
+      *ngIf="
+        form.errors &&
+        form.errors['futureDate'] &&
+        (form.get('year')?.touched || form.get('month')?.touched)
+      "
+      class="notification is-danger mt-4"
+    >
+      You cannot select the current or a future month and year.
+    </div>
+    <div *ngIf="errorMessage" class="notification is-danger mt-4">
+      {{ errorMessage }}
+    </div>
+    <div *ngIf="successMessage" class="notification is-success mt-4">
+      {{ successMessage }}
+    </div>
   </form>
+  <div class="has-text-centered mt-4">
+    <a routerLink="/list-data" class="is-link">Back to List</a>
+  </div>
 </div>

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import {
   ReactiveFormsModule,
   FormBuilder,
@@ -13,7 +14,7 @@ import { HeaderComponent } from '../header/header.component';
 @Component({
   selector: 'app-magic-link-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, HeaderComponent],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, HeaderComponent],
   templateUrl: './magic-link-login.component.html',
   styleUrl: './magic-link-login.component.css',
 })
@@ -34,23 +35,27 @@ export class MagicLinkLoginComponent implements OnInit {
 
   async ngOnInit() {
     if (await this.supabaseService.isAuthenticated()) {
-      this.router.navigate(['/data-entry']);
+      this.router.navigate(['/list-data']);
     }
   }
 
-  onSubmit() {
+  async onSubmit() {
     if (this.form.valid) {
       this.successMessage = '';
       this.errorMessage = '';
       const { email } = this.form.value;
-      this.supabaseService
-        .sendMagicLink(email)
-        .then(() => {
-          this.successMessage = 'Check your email for a login link!';
-        })
-        .catch((error) => {
-          this.errorMessage = 'Error sending magic link: ' + error.message;
-        });
+      try {
+        const exists = await this.supabaseService.userExistsByEmail(email);
+        if (!exists) {
+          this.errorMessage = 'User not found.';
+          return;
+        }
+        await this.supabaseService.sendMagicLink(email);
+        this.successMessage = 'Check your email for a login link!';
+      } catch (error: any) {
+        this.errorMessage =
+          'Error sending magic link: ' + (error.message || error);
+      }
     }
   }
 }

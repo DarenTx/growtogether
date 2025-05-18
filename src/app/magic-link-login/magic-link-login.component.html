@@ -1,16 +1,30 @@
 <app-header />
 
-<div class="login-container">
-  <h2>Login</h2>
-  <div *ngIf="successMessage" class="success-message">
+<div class="container is-max-desktop mt-6">
+  <div *ngIf="successMessage" class="notification is-success">
     {{ successMessage }}
   </div>
-  <div *ngIf="errorMessage" class="error-message">
+  <div *ngIf="errorMessage" class="notification is-danger">
     {{ errorMessage }}
   </div>
+  <h2 class="title is-3 has-text-centered mb-5">Login</h2>
   <form [formGroup]="form" (ngSubmit)="onSubmit()">
     <label for="email">Email:</label>
     <input id="email" type="email" formControlName="email" />
-    <button type="submit" [disabled]="form.invalid">Send Login Link</button>
+    <div class="field mt-4">
+      <div class="control">
+        <button
+          type="submit"
+          [disabled]="form.invalid"
+          class="button is-primary is-fullwidth px-5"
+          style="min-width: 150px"
+        >
+          Send Login Link
+        </button>
+      </div>
+    </div>
+    <div class="has-text-centered mt-2">
+      <a routerLink="/register" class="is-link">Register for an account</a>
+    </div>
   </form>
 </div>

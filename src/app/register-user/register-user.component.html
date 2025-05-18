@@ -1,0 +1,87 @@
+<app-header />
+
+<div class="container is-max-desktop mt-6">
+  <h2 class="title is-3 has-text-centered mb-5">Register</h2>
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div class="field mb-4">
+      <label class="label" for="first_name">First Name</label>
+      <div class="control">
+        <input
+          id="first_name"
+          class="input"
+          type="text"
+          formControlName="first_name"
+          required
+        />
+      </div>
+    </div>
+    <div class="field mb-4">
+      <label class="label" for="last_name">Last Name</label>
+      <div class="control">
+        <input
+          id="last_name"
+          class="input"
+          type="text"
+          formControlName="last_name"
+          required
+        />
+      </div>
+    </div>
+    <div class="field mb-4">
+      <label class="label" for="email">Email</label>
+      <div class="control">
+        <input
+          id="email"
+          class="input"
+          type="email"
+          formControlName="email"
+          required
+        />
+      </div>
+    </div>
+    <div class="field mb-4">
+      <label class="label" for="phone">Phone</label>
+      <div class="control">
+        <input
+          id="phone"
+          class="input"
+          type="tel"
+          formControlName="phone"
+          required
+        />
+      </div>
+    </div>
+    <div class="field mb-4">
+      <label class="label" for="invitation_code">Invitation Code</label>
+      <div class="control">
+        <input
+          id="invitation_code"
+          class="input"
+          type="text"
+          formControlName="invitation_code"
+          required
+        />
+      </div>
+    </div>
+    <div class="field mt-4">
+      <div class="control">
+        <button
+          type="submit"
+          class="button is-primary is-fullwidth"
+          [disabled]="form.invalid"
+        >
+          Register
+        </button>
+      </div>
+    </div>
+    <div class="has-text-centered mt-2">
+      <a routerLink="/magic-link-login" class="is-link">Return To Login</a>
+    </div>
+    <div *ngIf="successMessage" class="notification is-success mt-4">
+      {{ successMessage }}
+    </div>
+    <div *ngIf="errorMessage" class="notification is-danger mt-4">
+      {{ errorMessage }}
+    </div>
+  </form>
+</div>
