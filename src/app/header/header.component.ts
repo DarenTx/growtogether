@@ -5,6 +5,7 @@ import { Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { AppNavComponent } from '../app-nav/app-nav.component';
+import { User } from '../models/user.model';
 
 @Component({
   selector: 'app-header',
@@ -15,29 +16,35 @@ import { AppNavComponent } from '../app-nav/app-nav.component';
 })
 export class HeaderComponent implements OnInit, OnDestroy {
   isAuthenticated = false;
-  private sub?: Subscription;
-  user: any = null;
+  user: User | null = null;
+
+  private authSubscription?: Subscription;
 
   constructor(
-    private supabaseService: SupabaseService,
-    private router: Router
+    private readonly supabaseService: SupabaseService,
+    private readonly router: Router
   ) {}
 
-  ngOnInit() {
-    this.supabaseService.logSession();
-    this.sub = this.supabaseService.authState$.subscribe((isAuth) => {
-      this.isAuthenticated = isAuth;
-      this.loadUser();
-    });
+  ngOnInit(): void {
+    this.initializeAuthState();
   }
 
-  ngOnDestroy() {
-    this.sub?.unsubscribe();
+  ngOnDestroy(): void {
+    this.authSubscription?.unsubscribe();
   }
 
-  async logout() {
+  private initializeAuthState(): void {
+    this.authSubscription = this.supabaseService.authState$.subscribe(
+      async (isAuth) => {
+        this.isAuthenticated = isAuth;
+        await this.loadUser();
+      }
+    );
+  }
+
+  async logout(): Promise<void> {
     await this.supabaseService.logout();
-    this.router.navigate(['/login']);
+    await this.router.navigate(['/login']);
   }
 
   get isAuthPage(): boolean {
@@ -45,7 +52,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     return url === '/login' || url === '/register';
   }
 
-  private async loadUser() {
+  private async loadUser(): Promise<void> {
     this.user = await this.supabaseService.getUser();
   }
 }

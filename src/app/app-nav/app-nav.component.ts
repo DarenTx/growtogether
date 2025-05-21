@@ -15,4 +15,6 @@ import { RouterModule } from '@angular/router';
   `,
   styleUrls: ['./app-nav.component.css'],
 })
-export class AppNavComponent {}
+export class AppNavComponent {
+  readonly title = 'App Navigation';
+}
