@@ -31,23 +31,19 @@
   >
     <thead>
       <tr>
-        <th (click)="setSort('investment_firm')" style="cursor: pointer">
+        <th
+          sortable="investment_firm"
+          [direction]="sortDirection"
+          (sort)="onSort($event)"
+        >
           Investment Firm
-          <span *ngIf="sortColumn === 'investment_firm'">
-            {{ sortDirection === "asc" ? "▲" : "▼" }}
-          </span>
         </th>
-        <th (click)="setSort('period')" style="cursor: pointer">
-          Period
-          <span *ngIf="sortColumn === 'period'">
-            {{ sortDirection === "asc" ? "▲" : "▼" }}
-          </span>
-        </th>
-        <th (click)="setSort('ytd_return')" style="cursor: pointer">
+        <th
+          sortable="monthly_return"
+          [direction]="sortDirection"
+          (sort)="onSort($event)"
+        >
           YTD Return
-          <span *ngIf="sortColumn === 'ytd_return'">
-            {{ sortDirection === "asc" ? "▲" : "▼" }}
-          </span>
         </th>
         <th class="has-text-right"></th>
       </tr>
@@ -55,13 +51,6 @@
     <tbody>
       <tr *ngFor="let row of filteredData">
         <td>{{ row.investment_firm }}</td>
-        <td>
-          <ng-container *ngIf="+row.month === 1; else range">
-            Jan {{ row.year }} </ng-container
-          ><ng-template #range
-            >Jan to {{ getMonthAbbr(row.month) }} {{ row.year }}</ng-template
-          >
-        </td>
         <td [ngClass]="{ 'has-text-danger': row.monthly_return < 0 }">
           {{ row.monthly_return | number : "1.2-2" }}%
         </td>

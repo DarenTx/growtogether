@@ -4,6 +4,12 @@ import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { SupabaseService } from '../services/supabase.service';
 import { HeaderComponent } from '../header/header.component';
+import {
+  SortableDirective,
+  SortDirection,
+  SortEvent,
+} from '../directives/sortable.directive';
+import { SortService } from '../services/sort.service';
 
 interface MonthlyData {
   id?: number;
@@ -15,13 +21,16 @@ interface MonthlyData {
   created_at?: string;
 }
 
-type SortDirection = 'asc' | 'desc';
-type SortColumn = 'investment_firm' | 'period' | 'ytd_return' | '';
-
 @Component({
   selector: 'app-list-data',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, HeaderComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    RouterModule,
+    HeaderComponent,
+    SortableDirective,
+  ],
   templateUrl: './list-data.component.html',
   styleUrl: './list-data.component.css',
 })
@@ -30,7 +39,7 @@ export class ListDataComponent implements OnInit {
   loading = true;
   error = '';
   filterFirm = '';
-  sortColumn: SortColumn = '';
+  sortColumn: keyof MonthlyData = 'investment_firm';
   sortDirection: SortDirection = 'asc';
 
   private readonly months = 12;
@@ -63,7 +72,10 @@ export class ListDataComponent implements OnInit {
     'Dec',
   ];
 
-  constructor(private readonly supabaseService: SupabaseService) {}
+  constructor(
+    private readonly supabaseService: SupabaseService,
+    private readonly sortService: SortService
+  ) {}
 
   async ngOnInit(): Promise<void> {
     await this.loadData();
@@ -132,13 +144,9 @@ export class ListDataComponent implements OnInit {
     }
   }
 
-  setSort(column: SortColumn): void {
-    if (this.sortColumn === column) {
-      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
-    } else {
-      this.sortColumn = column;
-      this.sortDirection = 'asc';
-    }
+  onSort(event: SortEvent): void {
+    this.sortColumn = event.column as keyof MonthlyData;
+    this.sortDirection = event.direction;
   }
 
   get filteredData(): MonthlyData[] {
@@ -150,25 +158,7 @@ export class ListDataComponent implements OnInit {
         )
       : this.data;
 
-    if (!this.sortColumn) return filtered;
-
-    return [...filtered].sort((a, b) => {
-      let result = 0;
-
-      switch (this.sortColumn) {
-        case 'investment_firm':
-          result = a.investment_firm.localeCompare(b.investment_firm);
-          break;
-        case 'period':
-          result = a.year - b.year || a.month - b.month;
-          break;
-        case 'ytd_return':
-          result = a.monthly_return - b.monthly_return;
-          break;
-      }
-
-      return this.sortDirection === 'asc' ? result : -result;
-    });
+    return this.sortService.sort(filtered, this.sortColumn, this.sortDirection);
   }
 
   get firmOptions(): string[] {
