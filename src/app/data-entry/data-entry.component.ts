@@ -84,10 +84,18 @@ export class DataEntryComponent implements OnInit, OnDestroy {
 
     this.form = this.fb.group(
       {
-        investment_firm: ['', [Validators.required]],
-        year: [currentYear, [Validators.required]],
-        month: [prevMonth, [Validators.required]],
-        percentage: [null, [Validators.required]],
+        investment_firm: this.fb.control('', {
+          validators: [Validators.required],
+        }),
+        year: this.fb.control(currentYear, {
+          validators: [Validators.required],
+        }),
+        month: this.fb.control(prevMonth, {
+          validators: [Validators.required],
+        }),
+        percentage: this.fb.control<number | null>(null, {
+          validators: [Validators.required],
+        }),
       },
       { validators: this.noFutureDateValidator }
     );
@@ -189,7 +197,7 @@ export class DataEntryComponent implements OnInit, OnDestroy {
     await this.supabaseService.updateMonthlyResult(
       id,
       formData.investment_firm,
-      formData.percentage!
+      formData.percentage ?? 0
     );
   }
 
@@ -200,14 +208,16 @@ export class DataEntryComponent implements OnInit, OnDestroy {
     await this.supabaseService.insertMonthlyResult(
       formData.year,
       formData.month,
-      formData.percentage!,
+      formData.percentage ?? 0,
       formData.investment_firm,
       userId
     );
   }
 
   private handleSuccess(formData: FormData): void {
-    this.successMessage = 'Data saved successfully!';
+    this.successMessage = this.editMode
+      ? 'Data updated successfully!'
+      : 'Data saved successfully!';
     this.form.reset({
       investment_firm: '',
       year: formData.year,
@@ -225,7 +235,7 @@ export class DataEntryComponent implements OnInit, OnDestroy {
       this.errorMessage =
         'You have already entered data for this month and year.';
     } else {
-      this.errorMessage = `Error saving data: ${errorMessage}`;
+      this.errorMessage = 'An error occurred while saving the data.';
     }
   }
 
@@ -238,10 +248,12 @@ export class DataEntryComponent implements OnInit, OnDestroy {
     const currentYear = new Date().getFullYear();
     const currentMonth = new Date().getMonth() + 1;
 
-    this.filteredMonths =
-      selectedYear === currentYear
-        ? this.months.filter((m) => m.value < currentMonth)
-        : [...this.months];
+    this.filteredMonths = this.months.filter((month) => {
+      if (selectedYear === currentYear) {
+        return month.value <= currentMonth - 1;
+      }
+      return true;
+    });
   }
 
   private noFutureDateValidator(
@@ -249,13 +261,13 @@ export class DataEntryComponent implements OnInit, OnDestroy {
   ): ValidationErrors | null {
     const year = formGroup.get('year')?.value;
     const month = formGroup.get('month')?.value;
+    const currentYear = new Date().getFullYear();
+    const currentMonth = new Date().getMonth() + 1;
 
-    if (!year || !month) return null;
+    if (year > currentYear || (year === currentYear && month >= currentMonth)) {
+      return { futureDate: true };
+    }
 
-    const selectedDate = new Date(year, month - 1, 1);
-    const now = new Date();
-    const currentMonthDate = new Date(now.getFullYear(), now.getMonth(), 1);
-
-    return selectedDate >= currentMonthDate ? { futureDate: true } : null;
+    return null;
   }
 }

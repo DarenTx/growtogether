@@ -78,7 +78,8 @@
           <a
             href="#"
             (click)="
-              deleteRow(row.id, row.month, row.year); $event.preventDefault()
+              deleteRow(row.id ?? undefined, row.month, row.year);
+              $event.preventDefault()
             "
             [attr.title]="'Delete ' + getMonthName(row.month) + ' ' + row.year"
             style="margin-left: 0.5em; color: #e53e3e"

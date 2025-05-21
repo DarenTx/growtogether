@@ -6,6 +6,7 @@ import {
   FormBuilder,
   FormGroup,
   Validators,
+  FormControl,
 } from '@angular/forms';
 import { SupabaseService } from '../services/supabase.service';
 import { User } from '../models/user.model';
@@ -41,13 +42,20 @@ export class RegisterUserComponent implements OnInit {
   }
 
   private initializeForm(): void {
-    this.form = this.fb.group({
-      first_name: ['', [Validators.required]],
-      last_name: ['', [Validators.required]],
-      email: ['', [Validators.required, Validators.email]],
-      phone: ['', [Validators.required]],
-      invitation_code: ['', [Validators.required]],
-    });
+    this.form = this.fb.group(
+      {
+        email: this.fb.control('', {
+          validators: [Validators.required, Validators.email],
+        }),
+        password: this.fb.control('', {
+          validators: [Validators.required, Validators.minLength(6)],
+        }),
+        confirmPassword: this.fb.control('', {
+          validators: [Validators.required],
+        }),
+      },
+      { validators: this.passwordMatchValidator }
+    );
   }
 
   ngOnInit(): void {
@@ -134,5 +142,13 @@ export class RegisterUserComponent implements OnInit {
   private resetMessages(): void {
     this.successMessage = '';
     this.errorMessage = '';
+  }
+
+  private passwordMatchValidator(
+    form: FormGroup
+  ): { [key: string]: boolean } | null {
+    const password = form.get('password')?.value;
+    const confirmPassword = form.get('confirmPassword')?.value;
+    return password === confirmPassword ? null : { passwordMismatch: true };
   }
 }

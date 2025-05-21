@@ -105,7 +105,16 @@ export class ListDataComponent implements OnInit {
     return this.monthAbbrs[monthNumber - 1] || '';
   }
 
-  async deleteRow(id: number, month: number, year: number): Promise<void> {
+  async deleteRow(
+    id: number | undefined,
+    month: number,
+    year: number
+  ): Promise<void> {
+    if (!id) {
+      this.error = 'Cannot delete: Missing record ID';
+      return;
+    }
+
     const confirmed = confirm(
       `Are you sure you want to delete the entry for ${this.getMonthName(
         month
