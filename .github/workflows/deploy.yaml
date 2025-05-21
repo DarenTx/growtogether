@@ -30,9 +30,9 @@ jobs:
       - name: List dist folder contents
         run: ls -R dist
 
-      - name: Deploy redirect to GitHub Pages
+      - name: Deploy Angular app to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./redirect
-          publish_branch: gh-pages
+          publish_dir: ./dist/grow-together/browser
+          cname: growtogether.cadiumdev.com
