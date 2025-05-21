@@ -6,6 +6,7 @@ import {
   FormBuilder,
   FormGroup,
   Validators,
+  FormControl,
 } from '@angular/forms';
 import { SupabaseService } from '../services/supabase.service';
 import { Router } from '@angular/router';
@@ -37,7 +38,9 @@ export class MagicLinkLoginComponent implements OnInit {
 
   private initializeForm(): void {
     this.form = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
+      email: this.fb.control('', {
+        validators: [Validators.required, Validators.email],
+      }),
     });
   }
 

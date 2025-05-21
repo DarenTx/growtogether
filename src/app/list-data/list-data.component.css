@@ -1,0 +1,25 @@
+th[sortable] {
+  position: relative;
+  padding-right: 1.5em;
+}
+
+th[sortable].asc::after,
+th[sortable].desc::after {
+  content: "";
+  position: absolute;
+  right: 0.5em;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+}
+
+th[sortable].asc::after {
+  border-bottom: 5px solid #000;
+}
+
+th[sortable].desc::after {
+  border-top: 5px solid #000;
+}
