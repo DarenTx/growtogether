@@ -35,7 +35,7 @@ export class MagicLinkLoginComponent implements OnInit {
 
   async ngOnInit() {
     if (await this.supabaseService.isAuthenticated()) {
-      this.router.navigate(['/list-data']);
+      this.router.navigate(['/list']);
     }
   }
 
