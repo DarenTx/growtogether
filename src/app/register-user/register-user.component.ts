@@ -11,6 +11,14 @@ import { SupabaseService } from '../services/supabase.service';
 import { User } from '../models/user.model';
 import { HeaderComponent } from '../header/header.component';
 
+interface RegistrationForm {
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone: string;
+  invitation_code: string;
+}
+
 @Component({
   selector: 'app-register-user',
   standalone: true,
@@ -19,27 +27,34 @@ import { HeaderComponent } from '../header/header.component';
   styleUrl: './register-user.component.css',
 })
 export class RegisterUserComponent implements OnInit {
-  form: FormGroup;
+  form!: FormGroup;
   successMessage = '';
   errorMessage = '';
 
   constructor(
-    private fb: FormBuilder,
-    private supabaseService: SupabaseService,
-    private route: ActivatedRoute,
-    private router: Router
+    private readonly fb: FormBuilder,
+    private readonly supabaseService: SupabaseService,
+    private readonly route: ActivatedRoute,
+    private readonly router: Router
   ) {
+    this.initializeForm();
+  }
+
+  private initializeForm(): void {
     this.form = this.fb.group({
-      first_name: ['', Validators.required],
-      last_name: ['', Validators.required],
+      first_name: ['', [Validators.required]],
+      last_name: ['', [Validators.required]],
       email: ['', [Validators.required, Validators.email]],
-      phone: ['', Validators.required],
-      invitation_code: ['', Validators.required],
+      phone: ['', [Validators.required]],
+      invitation_code: ['', [Validators.required]],
     });
   }
 
-  ngOnInit() {
-    // Pre-fill and disable email if present in query params
+  ngOnInit(): void {
+    this.handleEmailPrefill();
+  }
+
+  private handleEmailPrefill(): void {
     const email = this.route.snapshot.queryParamMap.get('email');
     if (email) {
       this.form.get('email')?.setValue(email);
@@ -47,66 +62,77 @@ export class RegisterUserComponent implements OnInit {
     }
   }
 
-  async onSubmit() {
-    this.successMessage = '';
-    this.errorMessage = '';
+  async onSubmit(): Promise<void> {
     if (this.form.valid) {
-      let { first_name, last_name, email, phone, invitation_code } =
-        this.form.value;
-      invitation_code = invitation_code.toLowerCase();
+      this.resetMessages();
+      const formData = this.form.getRawValue() as RegistrationForm;
+
       try {
-        // Get the current user's id from Supabase Auth
-        const session = await this.supabaseService[
-          'supabase'
-        ].auth.getSession();
-        const userId = session.data.session?.user?.id;
+        const userId = await this.getUserId();
         if (!userId) {
           this.errorMessage = 'User not logged in.';
           return;
         }
-        // If email is disabled, get it from the form control's value or from query param
-        if (this.form.get('email')?.disabled) {
-          email = this.route.snapshot.queryParamMap.get('email') || email;
-        }
-        const user: User = {
-          id: userId,
-          first_name,
-          last_name,
-          email,
-          phone,
-          invitation_code,
-          is_active: true,
-        };
+
+        const user = await this.createUserObject(userId, formData);
         await this.supabaseService.registerUser(user);
-        this.successMessage = 'Registration successful!';
-        this.form.reset();
-        this.router.navigate(['/list']);
-      } catch (err: any) {
-        if (err.message && err.message.includes('row-level security policy')) {
-          this.errorMessage =
-            'Registration failed: You are not authorized to register with this invitation code.';
-        } else if (
-          err.message &&
-          err.message.includes(
-            'duplicate key value violates unique constraint'
-          ) &&
-          err.message.includes('unique_email')
-        ) {
-          this.errorMessage =
-            'Registration failed: This email is already registered.';
-        } else if (
-          err.message &&
-          err.message.includes(
-            'duplicate key value violates unique constraint'
-          ) &&
-          err.message.includes('unique_phone')
-        ) {
-          this.errorMessage =
-            'Registration failed: This phone number is already registered.';
-        } else {
-          this.errorMessage = err.message || 'Registration failed.';
-        }
+
+        this.handleSuccess();
+      } catch (error: unknown) {
+        this.handleError(error);
       }
     }
+  }
+
+  private async getUserId(): Promise<string | null> {
+    const session = await this.supabaseService['supabase'].auth.getSession();
+    return session.data.session?.user?.id || null;
+  }
+
+  private async createUserObject(
+    userId: string,
+    formData: RegistrationForm
+  ): Promise<User> {
+    const email = this.form.get('email')?.disabled
+      ? this.route.snapshot.queryParamMap.get('email') || formData.email
+      : formData.email;
+
+    return {
+      id: userId,
+      first_name: formData.first_name,
+      last_name: formData.last_name,
+      email,
+      phone: formData.phone,
+      invitation_code: formData.invitation_code.toLowerCase(),
+      is_active: true,
+    };
+  }
+
+  private handleSuccess(): void {
+    this.successMessage = 'Registration successful!';
+    this.form.reset();
+    this.router.navigate(['/list']);
+  }
+
+  private handleError(error: unknown): void {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+
+    if (errorMessage.includes('row-level security policy')) {
+      this.errorMessage =
+        'Registration failed: You are not authorized to register with this invitation code.';
+    } else if (errorMessage.includes('unique_email')) {
+      this.errorMessage =
+        'Registration failed: This email is already registered.';
+    } else if (errorMessage.includes('unique_phone')) {
+      this.errorMessage =
+        'Registration failed: This phone number is already registered.';
+    } else {
+      this.errorMessage = `Registration failed: ${errorMessage}`;
+    }
+  }
+
+  private resetMessages(): void {
+    this.successMessage = '';
+    this.errorMessage = '';
   }
 }
