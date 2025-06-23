@@ -24,6 +24,7 @@ export class SupabaseService {
   // Table names as private constants
   private readonly TABLE_USERS = 'users';
   private readonly TABLE_MONTHLY_RESULTS = 'monthly_results';
+  private readonly TABLE_YEARLY_RESULTS = 'yearly_results';
 
   // Computed redirect URL
   private readonly redirectUrl: string;
@@ -209,4 +210,32 @@ export class SupabaseService {
   }
 
   // #endregion
+
+  /**
+   * Claims monthly_results rows for a user by updating user_id where email matches.
+   */
+  async claimMonthlyResultsByEmail(
+    userId: string,
+    email: string
+  ): Promise<void> {
+    const { error } = await this.supabase
+      .from(this.TABLE_MONTHLY_RESULTS)
+      .update({ user_id: userId })
+      .eq('email', email);
+    if (error) throw error;
+  }
+
+  /**
+   * Claims yearly_results rows for a user by updating user_id where email matches.
+   */
+  async claimYearlyResultsByEmail(
+    userId: string,
+    email: string
+  ): Promise<void> {
+    const { error } = await this.supabase
+      .from(this.TABLE_YEARLY_RESULTS)
+      .update({ user_id: userId })
+      .eq('email', email);
+    if (error) throw error;
+  }
 }

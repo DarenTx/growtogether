@@ -42,20 +42,23 @@ export class RegisterUserComponent implements OnInit {
   }
 
   private initializeForm(): void {
-    this.form = this.fb.group(
-      {
-        email: this.fb.control('', {
-          validators: [Validators.required, Validators.email],
-        }),
-        password: this.fb.control('', {
-          validators: [Validators.required, Validators.minLength(6)],
-        }),
-        confirmPassword: this.fb.control('', {
-          validators: [Validators.required],
-        }),
-      },
-      { validators: this.passwordMatchValidator }
-    );
+    this.form = this.fb.group({
+      first_name: this.fb.control('', {
+        validators: [Validators.required],
+      }),
+      last_name: this.fb.control('', {
+        validators: [Validators.required],
+      }),
+      email: this.fb.control('', {
+        validators: [Validators.required, Validators.email],
+      }),
+      phone: this.fb.control('', {
+        validators: [Validators.required],
+      }),
+      invitation_code: this.fb.control('', {
+        validators: [Validators.required],
+      }),
+    });
   }
 
   ngOnInit(): void {
@@ -84,6 +87,16 @@ export class RegisterUserComponent implements OnInit {
 
         const user = await this.createUserObject(userId, formData);
         await this.supabaseService.registerUser(user);
+
+        // Update user_id in reports tables for any rows with matching email
+        await this.supabaseService.claimMonthlyResultsByEmail(
+          userId,
+          user.email
+        );
+        await this.supabaseService.claimYearlyResultsByEmail(
+          userId,
+          user.email
+        );
 
         this.handleSuccess();
       } catch (error: unknown) {
@@ -142,13 +155,5 @@ export class RegisterUserComponent implements OnInit {
   private resetMessages(): void {
     this.successMessage = '';
     this.errorMessage = '';
-  }
-
-  private passwordMatchValidator(
-    form: FormGroup
-  ): { [key: string]: boolean } | null {
-    const password = form.get('password')?.value;
-    const confirmPassword = form.get('confirmPassword')?.value;
-    return password === confirmPassword ? null : { passwordMismatch: true };
   }
 }

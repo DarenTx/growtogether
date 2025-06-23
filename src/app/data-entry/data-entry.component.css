@@ -5,68 +5,75 @@ body,
 }
 
 .data-entry-container {
-  max-width: 500px;
-  margin: 2rem auto;
+  max-width: 420px;
+  margin: 3rem auto;
   background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.07);
-  padding: 2rem 1.5rem 2.5rem 1.5rem;
+  border-radius: 18px;
+  box-shadow: 0 4px 32px rgba(60, 80, 60, 0.07);
+  padding: 2.5rem 2rem 2.5rem 2rem;
   display: flex;
   flex-direction: column;
   align-items: stretch;
 }
 
-.data-entry-container h2 {
-  margin-bottom: 1.5rem;
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: #2d3748;
+h2 {
+  font-family: "DM Sans", "Inter", Arial, sans-serif;
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #37423b;
+  margin-bottom: 2rem;
   text-align: center;
 }
 
 label {
-  font-weight: 500;
-  color: #4a5568;
+  font-weight: 600;
+  color: #5e8c61;
   margin-bottom: 0.5rem;
+  font-size: 1.1rem;
 }
 
 select,
-input[type="number"] {
+input[type="number"],
+input[type="text"] {
   width: 100%;
-  padding: 0.75rem 1rem;
-  border: 1px solid #cbd5e1;
-  border-radius: 6px;
-  font-size: 1rem;
-  margin-bottom: 1.25rem;
-  transition: border 0.2s;
+  background: #f9f7f2;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  padding: 0.85rem 1.1rem;
+  margin-bottom: 1.2rem;
+  color: #37423b;
+  font-family: "DM Sans", "Inter", Arial, sans-serif;
 }
 select:focus,
-input[type="number"]:focus {
-  border-color: #3182ce;
+input[type="number"]:focus,
+input[type="text"]:focus {
+  border-color: #7ca87c;
   outline: none;
 }
 
 button[type="submit"] {
-  background: #3182ce;
+  background: #7ca87c;
   color: #fff;
   border: none;
-  border-radius: 6px;
-  padding: 0.75rem 0;
-  font-size: 1.1rem;
-  font-weight: 600;
+  border-radius: 8px;
+  padding: 0.9rem 0;
+  font-size: 1.2rem;
+  font-weight: 700;
   cursor: pointer;
   transition: background 0.2s;
   margin: 0.5rem 0.5rem 0.5rem 0.5rem;
+  box-shadow: 0 2px 8px rgba(124, 168, 124, 0.08);
 }
 button[type="submit"]:hover {
-  background: #2563eb;
+  background: #5e8c61;
 }
 
 .success-message {
-  color: #38a169;
-  background: #e6fffa;
-  border: 1px solid #b2f5ea;
-  border-radius: 6px;
+  color: #5e8c61;
+  background: #eafaf1;
+  border: 1px solid #b7e2c6;
+  border-radius: 8px;
   padding: 0.75rem 1rem;
   margin-bottom: 1rem;
   text-align: center;
@@ -75,7 +82,7 @@ button[type="submit"]:hover {
   color: #e53e3e;
   background: #fff5f5;
   border: 1px solid #fed7d7;
-  border-radius: 6px;
+  border-radius: 8px;
   padding: 0.75rem 1rem;
   margin-bottom: 1rem;
   text-align: center;
@@ -88,16 +95,11 @@ select.is-danger {
   box-shadow: 0 0 0 0.125em rgba(229, 62, 62, 0.25);
 }
 
-input[type="text"],
-.input {
-  background: var(--input-bg, #fff);
-  color: var(--input-color, #222);
-}
-
-@media (prefers-color-scheme: dark) {
-  input[type="text"],
-  .input {
-    background: #fff !important;
-    color: #222 !important;
+@media (max-width: 600px) {
+  .data-entry-container {
+    padding: 1.2rem 0.5rem;
+  }
+  h2 {
+    font-size: 2rem;
   }
 }
