@@ -1,35 +1,22 @@
-<nav class="navbar is-primary" role="navigation" aria-label="main navigation">
-  <div class="navbar-brand">
-    <a
-      routerLink="/"
-      class="navbar-item has-text-weight-bold has-text-white is-size-3"
-      style="cursor: pointer"
-    >
+<nav role="navigation" aria-label="main navigation">
+  <div>
+    <a routerLink="/">
+      <img src="assets/grow-together-logo.png" alt="Grow Together Logo" />
       Grow Together
     </a>
   </div>
-  <div class="navbar-end">
-    <div
-      class="navbar-item has-text-weight-bold"
-      style="display: flex; align-items: center; gap: 0.5rem"
-    >
-      <ng-container *ngIf="isAuthenticated; else loginLink">
-        <span class="header-white">
-          {{
-            user?.first_name && user?.last_name
-              ? user?.first_name + " " + user?.last_name
-              : user?.email || ""
-          }}
-        </span>
-        <span class="header-white">|</span>
-        <a href="#" (click)="logout(); $event.preventDefault()" class="is-link"
-          >Logout</a
-        >
-      </ng-container>
-      <ng-template #loginLink>
-        <a routerLink="/login" class="is-link">Login</a>
-      </ng-template>
-    </div>
+  <div>
+    <ng-container *ngIf="isAuthenticated">
+      <span>
+        {{
+          user?.first_name && user?.last_name
+            ? user?.first_name + " " + user?.last_name
+            : user?.email || ""
+        }}
+      </span>
+      <span>|</span>
+      <a href="#" (click)="logout(); $event.preventDefault()">Logout</a>
+    </ng-container>
   </div>
 </nav>
 

@@ -1,3 +1,87 @@
+body,
+:host {
+  font-family: "DM Sans", "Inter", Arial, sans-serif;
+  background: #fdfaf5;
+}
+
+.data-list-container {
+  max-width: 900px;
+  margin: 3rem auto;
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 4px 32px rgba(60, 80, 60, 0.07);
+  padding: 2.5rem 2rem 2.5rem 2rem;
+}
+
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 1.1rem;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(124, 168, 124, 0.04);
+}
+th,
+td {
+  padding: 1rem 0.7rem;
+  text-align: left;
+}
+th {
+  background: #f9f7f2;
+  color: #5e8c61;
+  font-weight: 700;
+  font-size: 1.1rem;
+  border-bottom: 2px solid #e0e0e0;
+}
+td {
+  border-bottom: 1px solid #f0f0f0;
+}
+tr:last-child td {
+  border-bottom: none;
+}
+
+tr:hover {
+  background: #f6fbf7;
+}
+
+.button,
+.icon {
+  color: #7ca87c;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.1rem;
+  border-radius: 6px;
+  transition: background 0.2s, color 0.2s;
+}
+.button:hover,
+.icon:hover {
+  background: #eafaf1;
+  color: #5e8c61;
+}
+
+.notification.is-info {
+  background: #eafaf1;
+  color: #5e8c61;
+  border: 1px solid #b7e2c6;
+  border-radius: 8px;
+  margin-top: 1.5rem;
+  text-align: center;
+}
+
+@media (max-width: 900px) {
+  .data-list-container {
+    padding: 1.2rem 0.5rem;
+  }
+  table,
+  th,
+  td {
+    font-size: 1rem;
+  }
+}
+
 th[sortable] {
   position: relative;
   padding-right: 1.5em;
